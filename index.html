@@ -54,7 +54,7 @@ h2{font-size:17px;font-weight:bold;margin-bottom:8px}
 </style>
 </head>
 <body>
-<header>🌾 Verifica Scienze degli Alimenti — Classe Terza</header>
+<header>&#127807; Verifica Scienze degli Alimenti &#8212; Classe Terza</header>
 <div class="wrap">
   <div class="tab-row">
     <button class="tab active" id="tabStudente" onclick="switchMode('studente')">👤 Studente</button>
@@ -109,12 +109,61 @@ h2{font-size:17px;font-weight:bold;margin-bottom:8px}
 </div>
 <script>
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbzvP64yS9kbw8jJEP45LuCR2cflbqk-9D4Eg197YjZdx05JLo08u16kdgaZ-vanKlid/exec";
-const SYSTEM_PROMPT = 'Sei un professore di Educazione Civica di un istituto alberghiero italiano.\nArgomento: Agenda 2030 collegata a Scienze degli Alimenti.\nStai interrogando uno studente di prima superiore. Usa linguaggio semplice e chiaro.\nTratta questi SDG: SDG 2 Fame Zero, SDG 3 Salute e Benessere, SDG 12 Consumo Responsabile, SDG 13 Cambiamento climatico.\nCollegali a: etichetta alimentare, spreco alimentare, sicurezza alimentare, HACCP, nutrienti, batteri, allergeni, raccolta differenziata.\nFai almeno 10 domande, una alla volta, senza un limite massimo. Dopo ogni risposta dello studente dai un feedback brevissimo (1 riga) e fai subito la domanda successiva. Conduci il colloquio come una vera interrogazione orale: commenta brevemente la risposta dello studente (es. Ottimo, hai centrato il punto! oppure Non proprio, rifletti su...), poi collegati a quello che ha detto per fare la domanda successiva in modo naturale. Se lo studente sbaglia o e impreciso, correggilo gentilmente e approfondisci quell argomento. Se risponde bene, passa a un argomento nuovo collegato. Non fare mai domande avulse dal contesto — ogni domanda deve nascere dalla risposta precedente. Continua finche lo studente non clicca Termina. Risposte sempre brevi, massimo 3 righe.';
-const EVAL_INTRO = 'Valuta questo colloquio orale di Scienze degli Alimenti di uno studente di terza superiore indirizzo cucina di un istituto alberghiero italiano. La verifica riguarda il collegamento tra i contenuti disciplinari (prodotti agroalimentari, filiera, nutrizione, analisi sensoriale, DOP/IGP/STG, allevamenti) e gli obiettivi dell Agenda 2030, con attenzione alle azioni concrete in cucina professionale e come consumatore.';
-const EVAL_SCALE = "Usa questa scala di valutazione equilibrata che considera tre dimensioni:\na) Conoscenza disciplinare\nb) Capacita di collegamento con i 17 SDG dell Agenda 2030\nc) Capacita di proporre azioni concrete in un ristorante (come OSA) e a casa come consumatore\nScala:\n- 9-10: eccellente in tutte e tre le dimensioni, collegamenti non ovvi con gli SDG, azioni concrete e motivate\n- 8: buona conoscenza, collegamenti corretti, azioni concrete presenti ma non sempre approfondite\n- 6-7: conoscenza sufficiente, collegamenti generici, azioni superficiali\n- 1-5: lacune significative, incapace di collegare agli SDG o proporre azioni concrete\nUna risposta buona ma non eccellente vale 8, non 9 o 10.";
-const START_MSG = "Inizia il colloquio con una domanda che colleghi un prodotto alimentare studiato (es. cereali, latte, carne, prodotti ittici) a un obiettivo dell Agenda 2030.";
-const PDF_TITLE = 'Registro Valutazioni — Verifica Educazione Civica';
-const PDF_SUB = 'Argomento: Scienze degli Alimenti e Agenda 2030 — Classe Terza';
+const SYSTEM_PROMPT = `Sei un professore di Scienze degli Alimenti di un istituto alberghiero italiano, classe terza indirizzo cucina.
+Conduci una verifica orale che collega i contenuti disciplinari agli obiettivi dell Agenda 2030.
+I 17 SDG dell Agenda 2030 tutti potenzialmente collegabili:
+SDG 1 Poverta zero, SDG 2 Fame zero, SDG 3 Salute e benessere, SDG 4 Istruzione di qualita,
+SDG 5 Parita di genere, SDG 6 Acqua pulita, SDG 7 Energia pulita, SDG 8 Lavoro dignitoso,
+SDG 9 Industria e innovazione, SDG 10 Ridurre le disuguaglianze, SDG 11 Citta sostenibili,
+SDG 12 Consumo responsabile, SDG 13 Lotta al clima, SDG 14 Vita sott acqua,
+SDG 15 Vita sulla terra, SDG 16 Pace e giustizia, SDG 17 Partnership.
+Argomenti del programma di terza e principali SDG collegabili:
+MODULO 1 - Prodotti agroalimentari e filiera:
+- Cereali: struttura cariosside, sfarinati grano duro e tenero, forza farina, glutine, lievitazione -> SDG 2, 3, 12
+- Pane: produzione, lievitazione, modificazioni nutrienti in cottura, valore nutrizionale -> SDG 2, 3, 12
+- Pasta secca e Pasta di Gragnano IGP: produzione, valore nutrizionale, economia locale -> SDG 2, 3, 8, 12
+- Riso: tipologie in commercio, valore nutrizionale -> SDG 2, 3, 12
+- Latte: tipologie, composizione, valore nutrizionale -> SDG 3, 12, 15
+- Formaggi: produzione, tipologie, Mozzarella di Bufala Campana DOP -> SDG 3, 8, 12, 15
+- Yogurt e ricotta -> SDG 3, 12
+- Carne: classificazione, cottura, etichettatura, conservazione, impatto allevamenti intensivi -> SDG 2, 3, 12, 13, 15
+- Salumi, prosciutto crudo e cotto: produzione, ingredienti, valore nutrizionale -> SDG 3, 12
+- Prodotti ittici: classificazione, valore nutrizionale, qualita, pesca sostenibile -> SDG 2, 3, 14
+MODULO 2 - Nutrienti e alimentazione:
+- Dieta Mediterranea e nuova piramide alimentare 2025 -> SDG 2, 3, 13, 14, 15
+- Celiachia e intolleranza al lattosio: aspetti nutrizionali e sociali -> SDG 3, 10
+MODULO 3 - Analisi sensoriale (fai sempre riferimento ai prodotti realmente assaggiati in classe):
+- Pane bianco vs multicereali, formaggi (Grana Padano, Parmigiano Reggiano DOP a 22/28/36 mesi)
+- Riso (Vialone Nano IGP, Carnaroli, Venere), pasta Gragnano IGP vs pasta industriale
+- Mele (Annurca IGP, fragola, golden, verde), succo arancia fresco vs preconfezionato
+- Pollo alla birra, salumi (San Daniele DOP, Parma DOP, prosciutto cotto alta qualita vs scelto)
+- Salmone selvatico vs allevamento intensivo, polpo mediterraneo vs polpo indiano
+- Limone di Sorrento IGP, arance di Sorrento PAT, crostata e graffette con latte delattosato
+- Carbonara, dolcetto con ceci e cioccolato, pane di semola
+ED. CIVICA:
+- Latte Fieno STG e latte nobile: benessere animale -> SDG 15, 3, 12
+- Allevamenti intensivi bovini da latte: impatto ambientale e benessere animale -> SDG 13, 14, 15
+- Allevamenti intensivi prodotti ittici: acquacoltura vs pesca sostenibile -> SDG 14, 12
+Per ogni domanda chiedi di collegare l argomento a uno o piu SDG motivando il collegamento.
+Chiedi azioni concrete in cucina professionale e a casa come consumatore.
+Valorizza chi porta esempi concreti dalle sessioni di analisi sensoriale fatte in classe.
+Fai almeno 10 domande, una alla volta. Conduci come vera interrogazione orale:
+commenta la risposta, correggila se sbagliata, poi fai la domanda successiva collegandoti a cio che ha detto.
+Continua finche lo studente non clicca Termina. Risposte brevi, massimo 3 righe.`;
+const EVAL_INTRO = `Valuta questo colloquio orale di Scienze degli Alimenti di uno studente di terza superiore indirizzo cucina di un istituto alberghiero italiano. La verifica riguarda il collegamento tra i contenuti disciplinari (prodotti agroalimentari, filiera, DOP/IGP/STG, nutrizione, analisi sensoriale, allevamenti intensivi) e gli obiettivi dell Agenda 2030, con attenzione alle azioni concrete in cucina professionale e come consumatore.`;
+const EVAL_SCALE = `Usa questa scala di valutazione equilibrata che considera tre dimensioni:
+a) Conoscenza disciplinare degli argomenti del programma
+b) Capacita di collegamento con i 17 SDG dell Agenda 2030
+c) Capacita di proporre azioni concrete in cucina professionale e a casa come consumatore
+Scala:
+- 9-10: eccellente in tutte e tre le dimensioni, collegamenti non ovvi, azioni concrete e motivate
+- 8: buona conoscenza, collegamenti corretti, azioni presenti ma non sempre approfondite
+- 6-7: conoscenza sufficiente, collegamenti generici, azioni superficiali
+- 1-5: lacune significative, incapace di collegare agli SDG o proporre azioni concrete
+Una risposta buona ma non eccellente vale 8, non 9 o 10.`;
+const START_MSG = `Inizia il colloquio con una domanda che colleghi un prodotto del programma di terza (cereali, latte, formaggi, carne, prodotti ittici o un prodotto dell analisi sensoriale) a un obiettivo dell Agenda 2030.`;
+const PDF_TITLE = 'Registro Valutazioni — Verifica Scienze degli Alimenti (Classe Quinta)';
+const PDF_SUB = 'Argomento: Scienze degli Alimenti e Agenda 2030 — Classe Quinta';
 
 let messages = [];
 let risposteCount = 0;
