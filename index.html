@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifica Scienze degli Alimenti — Classe Terza</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f7f2;color:#222;min-height:100vh}
+header{background:#2f6b2f;color:white;padding:16px 20px;text-align:center;font-size:20px;font-weight:bold}
+.wrap{max-width:860px;margin:0 auto;padding:20px}
+.card{background:white;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.08);margin-bottom:20px}
+.hidden{display:none}
+label{font-size:13px;color:#666;display:block;margin-bottom:4px;margin-top:12px}
+input[type=text]{width:100%;padding:10px 12px;border-radius:8px;border:1px solid #ccc;font-size:15px;font-family:Arial}
+input[type=text]:focus{outline:none;border-color:#2f6b2f}
+.btn{width:100%;padding:11px;border-radius:8px;border:none;background:#2f6b2f;color:white;font-size:15px;font-weight:bold;cursor:pointer;margin-top:12px}
+.btn:hover{background:#245324}
+.btn-outline{background:white;color:#2f6b2f;border:2px solid #2f6b2f}
+.btn-outline:hover{background:#eef3ea}
+.chat-area{height:380px;overflow-y:auto;background:#eef3ea;border-radius:10px;padding:12px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.msg{padding:10px 14px;border-radius:10px;max-width:85%;font-size:14px;line-height:1.6;white-space:pre-wrap}
+.msg.bot{background:white;border:1px solid #ddd;align-self:flex-start}
+.msg.user{background:#2f6b2f;color:white;align-self:flex-end}
+.msg.loading{color:#888;font-style:italic;align-self:flex-start;background:white;border:1px solid #ddd}
+textarea{width:100%;padding:10px 12px;border-radius:8px;border:1px solid #ccc;font-size:14px;font-family:Arial;resize:vertical;min-height:70px}
+textarea:focus{outline:none;border-color:#2f6b2f}
+.btn-row{display:flex;gap:8px;margin-top:8px}
+.btn-send{flex:1;padding:10px;border-radius:8px;border:2px solid #2f6b2f;background:white;color:#2f6b2f;font-size:14px;font-weight:bold;cursor:pointer}
+.btn-send:hover{background:#eef3ea}
+.btn-end{padding:10px 16px;border-radius:8px;border:2px solid #b22222;background:#fff0f0;color:#b22222;font-size:14px;font-weight:bold;cursor:pointer}
+.btn-end:hover{background:#ffe0e0}
+.result-box{background:#f8f8f8;border-radius:8px;padding:16px;font-size:14px;line-height:1.8;white-space:pre-wrap;border:1px solid #ddd}
+.student-label{font-size:13px;color:#666;margin-bottom:10px;font-weight:bold}
+.status{font-size:13px;padding:8px 12px;border-radius:8px;margin-top:10px;text-align:center}
+.status.ok{background:#eef3ea;color:#2f6b2f;border:1px solid #c0ddb0}
+.status.err{background:#fff0f0;color:#b22222;border:1px solid #f0c0c0}
+.tab-row{display:flex;gap:8px;margin-bottom:16px}
+.tab{flex:1;padding:10px;border-radius:8px;border:2px solid #ccc;background:white;cursor:pointer;font-size:14px;font-weight:bold;text-align:center}
+.tab.active{background:#2f6b2f;color:white;border-color:#2f6b2f}
+.voti-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.voti-table th{background:#2f6b2f;color:white;padding:9px 10px;text-align:left}
+.voti-table td{padding:9px 10px;border-bottom:1px solid #eee;vertical-align:top}
+.voti-table tr:hover td{background:#f4f7f2}
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:13px;font-weight:bold}
+.badge-high{background:#eef3ea;color:#2f6b2f}
+.badge-mid{background:#fff8e0;color:#b8860b}
+.badge-low{background:#fff0f0;color:#b22222}
+.stats-row{display:flex;gap:12px;margin-bottom:16px}
+.stat-card{flex:1;background:#f4f7f2;border-radius:8px;padding:12px;text-align:center}
+.stat-num{font-size:26px;font-weight:bold;color:#2f6b2f}
+.stat-label{font-size:12px;color:#666;margin-top:2px}
+h2{font-size:17px;font-weight:bold;margin-bottom:8px}
+</style>
+</head>
+<body>
+<header>🌾 Verifica Scienze degli Alimenti — Classe Terza</header>
+<div class="wrap">
+  <div class="tab-row">
+    <button class="tab active" id="tabStudente" onclick="switchMode('studente')">👤 Studente</button>
+    <button class="tab" id="tabDocente" onclick="switchMode('docente')">🎓 Docente</button>
+  </div>
+  <div id="modoStudente">
+    <div class="card" id="setup">
+      <h2>Inizia verifica</h2>
+      <label>Nome e cognome</label>
+      <input type="text" id="nome" placeholder="es. Mario Rossi">
+      <label>Classe</label>
+      <input type="text" id="classe" placeholder="es. 3A">
+      <button class="btn" onclick="startChat()">Inizia verifica</button>
+    </div>
+    <div class="card hidden" id="chatSection">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="student-label" id="studentLabel" style="margin:0"></div>
+        <div id="contatore" style="font-size:13px;color:#2f6b2f;font-weight:bold;background:#eef3ea;padding:4px 12px;border-radius:12px">Risposte date: 0</div>
+      </div>
+      <div class="chat-area" id="chat"></div>
+      <textarea id="userInput" placeholder="Scrivi qui la tua risposta... (Invio per inviare)"></textarea>
+      <div class="btn-row">
+        <button class="btn-send" onclick="sendMessage()">Invia risposta</button>
+        <button class="btn-end" id="btnTermina" onclick="finishTest()" style="opacity:0.4;cursor:not-allowed" disabled>Termina e consegna</button>
+      </div>
+      <div id="terminaHint" style="font-size:12px;color:#888;text-align:right;margin-top:4px">Il tasto si attiva dopo almeno 10 risposte</div>
+    </div>
+    <div class="card hidden" id="resultSection">
+      <h2>La tua valutazione</h2>
+      <div class="result-box" id="result">Generazione valutazione in corso...</div>
+      <div id="saveStatus"></div>
+      <button class="btn btn-outline" onclick="resetStudente()" style="margin-top:14px">Nuova verifica</button>
+    </div>
+  </div>
+  <div id="modoDocente" class="hidden">
+    <div class="card">
+      <div class="stats-row" id="statsRow" style="display:none">
+        <div class="stat-card"><div class="stat-num" id="statN">0</div><div class="stat-label">Studenti</div></div>
+        <div class="stat-card"><div class="stat-num" id="statMedia">-</div><div class="stat-label">Media classe</div></div>
+        <div class="stat-card"><div class="stat-num" id="statMax">-</div><div class="stat-label">Voto piu alto</div></div>
+        <div class="stat-card"><div class="stat-num" id="statMin">-</div><div class="stat-label">Voto piu basso</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2>Registro valutazioni</h2>
+        <button class="btn-send" onclick="exportPDF()" style="width:auto;padding:8px 18px">Esporta PDF</button>
+      </div>
+      <div id="votiContainer">
+        <p style="color:#888;font-size:14px;text-align:center;padding:20px 0">Nessuna valutazione ancora.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbzvP64yS9kbw8jJEP45LuCR2cflbqk-9D4Eg197YjZdx05JLo08u16kdgaZ-vanKlid/exec";
+const SYSTEM_PROMPT = 'Sei un professore di Educazione Civica di un istituto alberghiero italiano.\nArgomento: Agenda 2030 collegata a Scienze degli Alimenti.\nStai interrogando uno studente di prima superiore. Usa linguaggio semplice e chiaro.\nTratta questi SDG: SDG 2 Fame Zero, SDG 3 Salute e Benessere, SDG 12 Consumo Responsabile, SDG 13 Cambiamento climatico.\nCollegali a: etichetta alimentare, spreco alimentare, sicurezza alimentare, HACCP, nutrienti, batteri, allergeni, raccolta differenziata.\nFai almeno 10 domande, una alla volta, senza un limite massimo. Dopo ogni risposta dello studente dai un feedback brevissimo (1 riga) e fai subito la domanda successiva. Conduci il colloquio come una vera interrogazione orale: commenta brevemente la risposta dello studente (es. Ottimo, hai centrato il punto! oppure Non proprio, rifletti su...), poi collegati a quello che ha detto per fare la domanda successiva in modo naturale. Se lo studente sbaglia o e impreciso, correggilo gentilmente e approfondisci quell argomento. Se risponde bene, passa a un argomento nuovo collegato. Non fare mai domande avulse dal contesto — ogni domanda deve nascere dalla risposta precedente. Continua finche lo studente non clicca Termina. Risposte sempre brevi, massimo 3 righe.';
+const EVAL_INTRO = 'Valuta questo colloquio orale di Scienze degli Alimenti di uno studente di terza superiore indirizzo cucina di un istituto alberghiero italiano. La verifica riguarda il collegamento tra i contenuti disciplinari (prodotti agroalimentari, filiera, nutrizione, analisi sensoriale, DOP/IGP/STG, allevamenti) e gli obiettivi dell Agenda 2030, con attenzione alle azioni concrete in cucina professionale e come consumatore.';
+const EVAL_SCALE = "Usa questa scala di valutazione equilibrata che considera tre dimensioni:\na) Conoscenza disciplinare\nb) Capacita di collegamento con i 17 SDG dell Agenda 2030\nc) Capacita di proporre azioni concrete in un ristorante (come OSA) e a casa come consumatore\nScala:\n- 9-10: eccellente in tutte e tre le dimensioni, collegamenti non ovvi con gli SDG, azioni concrete e motivate\n- 8: buona conoscenza, collegamenti corretti, azioni concrete presenti ma non sempre approfondite\n- 6-7: conoscenza sufficiente, collegamenti generici, azioni superficiali\n- 1-5: lacune significative, incapace di collegare agli SDG o proporre azioni concrete\nUna risposta buona ma non eccellente vale 8, non 9 o 10.";
+const START_MSG = "Inizia il colloquio con una domanda che colleghi un prodotto alimentare studiato (es. cereali, latte, carne, prodotti ittici) a un obiettivo dell Agenda 2030.";
+const PDF_TITLE = 'Registro Valutazioni — Verifica Educazione Civica';
+const PDF_SUB = 'Argomento: Scienze degli Alimenti e Agenda 2030 — Classe Terza';
+
+let messages = [];
+let risposteCount = 0;
+let votiLocali = [];
+
+let docenteAutorizzato = false;
+
+function switchMode(m) {
+  if (m === 'docente' && !docenteAutorizzato) {
+    const pin = prompt("Inserisci il PIN docente:");
+    if (pin !== "220275") {
+      alert("PIN errato.");
+      return;
+    }
+    docenteAutorizzato = true;
+  }
+  document.getElementById('modoStudente').classList.toggle('hidden', m !== 'studente');
+  document.getElementById('modoDocente').classList.toggle('hidden', m !== 'docente');
+  document.getElementById('tabStudente').classList.toggle('active', m === 'studente');
+  document.getElementById('tabDocente').classList.toggle('active', m === 'docente');
+  if (m === 'docente') renderVoti();
+}
+
+function addMsg(text, type) {
+  const chat = document.getElementById("chat");
+  const div = document.createElement("div");
+  div.className = "msg " + type;
+  div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+async function callAPI(msgs, system) {
+  const allMsgs = [{role:"system", content: system}, ...msgs];
+  // Tronca la conversazione se troppo lunga (max 20 messaggi)
+  const msgsTroncati = allMsgs.length > 22 ? [allMsgs[0], ...allMsgs.slice(-20)] : allMsgs;
+  const r = await fetch("https://veri.mariasavarese.workers.dev/", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      model: "llama-3.1-8b-instant",
+      max_tokens: 500,
+      messages: msgsTroncati
+    })
+  });
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  const d = await r.json();
+  if (!d.choices || !d.choices[0] || !d.choices[0].message) {
+    const errMsg = d.error ? d.error.message : JSON.stringify(d);
+    throw new Error("Risposta API non valida: " + errMsg);
+  }
+  return d.choices[0].message.content;
+}
+
+async function startChat() {
+  const nome = document.getElementById("nome").value.trim();
+  const classe = document.getElementById("classe").value.trim();
+  if (!nome || !classe) { alert("Inserisci nome e classe"); return; }
+  document.getElementById("setup").classList.add("hidden");
+  document.getElementById("chatSection").classList.remove("hidden");
+  document.getElementById("studentLabel").textContent = nome + " - " + classe;
+  messages = [];
+  risposteCount = 0;
+  const loading = addMsg("Sto preparando la prima domanda...", "loading");
+  try {
+    const reply = await callAPI([{role:"user", content: START_MSG}], SYSTEM_PROMPT);
+    loading.remove();
+    messages.push({role:"user", content: START_MSG});
+    messages.push({role:"assistant", content: reply});
+    addMsg(reply, "bot");
+  } catch(e) {
+    loading.textContent = "Errore connessione: " + e.message;
+  }
+}
+
+async function sendMessage() {
+  const input = document.getElementById("userInput");
+  const text = input.value.trim();
+  if (!text) return;
+  addMsg(text, "user");
+  messages.push({role:"user", content: text});
+  input.value = "";
+  risposteCount++;
+  document.getElementById("contatore").textContent = "Risposte date: " + risposteCount;
+  if (risposteCount >= 10) {
+    const b = document.getElementById("btnTermina");
+    b.disabled = false; b.style.opacity = "1"; b.style.cursor = "pointer";
+    document.getElementById("terminaHint").textContent = "Minimo raggiunto! Puoi consegnare quando vuoi.";
+    document.getElementById("terminaHint").style.color = "#2f6b2f";
+  }
+  const loading = addMsg("...", "loading");
+  try {
+    const reply = await callAPI(messages, SYSTEM_PROMPT);
+    loading.remove();
+    messages.push({role:"assistant", content: reply});
+    addMsg(reply, "bot");
+  } catch(e) {
+    loading.textContent = "Errore connessione: " + e.message;
+  }
+}
+
+async function finishTest() {
+  const label = document.getElementById("studentLabel").textContent;
+  const nome = label.split(" - ")[0];
+  const classe = label.split(" - ")[1];
+  document.getElementById("chatSection").classList.add("hidden");
+  document.getElementById("resultSection").classList.remove("hidden");
+  document.getElementById("result").textContent = "Generazione valutazione in corso...";
+  const transcript = messages.map(m => m.role.toUpperCase() + ": " + m.content).join("\n\n");
+  const evalPrompt = EVAL_INTRO + "\n\n" + EVAL_SCALE + "\n\nRispondi SOLO con un oggetto JSON valido, senza testo prima o dopo, nel formato esatto:\n{\"voto\":7,\"giudizio\":\"testo breve\",\"punti_forza\":\"testo\",\"da_migliorare\":\"testo\"}\n\nColloquio:\n" + transcript;
+  try {
+    const raw = await callAPI([{role:"user", content: evalPrompt}], "Sei un valutatore scolastico preciso. Rispondi SEMPRE e SOLO con un oggetto JSON valido senza nessun testo prima o dopo e senza backtick. Formato esatto: {\"voto\":7,\"giudizio\":\"testo\",\"punti_forza\":\"testo\",\"da_migliorare\":\"testo\"}");
+    let cleaned = raw.replace(/```json/g,"").replace(/```/g,"").trim();
+    // Estrai JSON anche se c'e testo intorno
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("JSON non trovato nella risposta");
+    const val = JSON.parse(match[0]);
+    if (!val.voto || !val.giudizio) throw new Error("Campi JSON mancanti");
+    document.getElementById("result").textContent = "Voto: " + val.voto + "/10\n\nGiudizio: " + val.giudizio + "\n\nPunti di forza: " + (val.punti_forza||"-") + "\n\nDa migliorare: " + (val.da_migliorare||"-");
+    const entry = {nome, classe, voto: val.voto, giudizio: val.giudizio, punti_forza: val.punti_forza||"-", da_migliorare: val.da_migliorare||"-", ora: new Date().toLocaleTimeString("it-IT")};
+    votiLocali.push(entry);
+    const status = document.getElementById("saveStatus");
+    try {
+      await fetch(SHEET_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"application/json"}, body: JSON.stringify(entry)});
+      status.className = "status ok";
+      status.textContent = "Valutazione salvata nel registro Google Sheets";
+    } catch(err) {
+      status.className = "status err";
+      status.textContent = "Salvataggio Google Sheets non riuscito";
+    }
+  } catch(e) {
+    document.getElementById("result").textContent = "Errore nella valutazione: " + e.message + "\nRiprova a cliccare Termina e consegna.";
+  }
+}
+
+function resetStudente() {
+  document.getElementById("resultSection").classList.add("hidden");
+  document.getElementById("setup").classList.remove("hidden");
+  document.getElementById("nome").value = "";
+  document.getElementById("classe").value = "";
+  document.getElementById("chat").innerHTML = "";
+  document.getElementById("saveStatus").textContent = "";
+  document.getElementById("contatore").textContent = "Risposte date: 0";
+  const b = document.getElementById("btnTermina");
+  b.disabled = true; b.style.opacity = "0.4"; b.style.cursor = "not-allowed";
+  document.getElementById("terminaHint").textContent = "Il tasto si attiva dopo almeno 10 risposte";
+  document.getElementById("terminaHint").style.color = "#888";
+  messages = []; risposteCount = 0;
+}
+
+function renderVoti() {
+  const c = document.getElementById("votiContainer");
+  const stats = document.getElementById("statsRow");
+  if (votiLocali.length === 0) {
+    stats.style.display = "none";
+    c.innerHTML = "<p style='color:#888;font-size:14px;text-align:center;padding:20px 0'>Nessuna valutazione ancora.</p>";
+    return;
+  }
+  stats.style.display = "flex";
+  const voti = votiLocali.map(v => v.voto);
+  const media = voti.reduce((s,v)=>s+v,0)/voti.length;
+  document.getElementById("statN").textContent = votiLocali.length;
+  document.getElementById("statMedia").textContent = media.toFixed(1);
+  document.getElementById("statMax").textContent = Math.max(...voti);
+  document.getElementById("statMin").textContent = Math.min(...voti);
+  let html = "<table class='voti-table'><thead><tr><th>Ora</th><th>Nome</th><th>Classe</th><th>Voto</th><th>Giudizio</th></tr></thead><tbody>";
+  votiLocali.forEach(v => {
+    const cls = v.voto>=7?"badge-high":v.voto>=5?"badge-mid":"badge-low";
+    html += "<tr><td>"+v.ora+"</td><td>"+v.nome+"</td><td>"+v.classe+"</td><td><span class='badge "+cls+"'>"+v.voto+"/10</span></td><td>"+v.giudizio+"</td></tr>";
+  });
+  html += "</tbody></table>";
+  c.innerHTML = html;
+}
+
+function exportPDF() {
+  if (votiLocali.length === 0) { alert("Nessuna valutazione da esportare."); return; }
+  const voti = votiLocali.map(v=>v.voto);
+  const media = (voti.reduce((s,v)=>s+v,0)/voti.length).toFixed(1);
+  const data = new Date().toLocaleDateString("it-IT");
+  let html = "<!DOCTYPE html><html><head><meta charset='UTF-8'><style>body{font-family:Arial;padding:30px;color:#222}h1{color:#2f6b2f;font-size:20px;margin-bottom:4px}.sub{color:#666;font-size:13px;margin-bottom:20px}table{width:100%;border-collapse:collapse;margin-bottom:20px}th{background:#2f6b2f;color:white;padding:9px 10px;text-align:left;font-size:13px}td{padding:9px 10px;border-bottom:1px solid #ddd;font-size:13px}.media{background:#eef3ea;padding:10px 16px;border-radius:8px;font-size:14px;margin-bottom:24px;display:inline-block}h2{color:#2f6b2f;font-size:15px;margin:20px 0 10px}.detail{background:#f8f8f8;padding:12px;border-radius:8px;margin-bottom:10px;font-size:13px;border-left:4px solid #2f6b2f}</style></head><body>";
+  html += "<h1>" + PDF_TITLE + "</h1><div class='sub'>" + PDF_SUB + " | Data: " + data + "</div>";
+  html += "<div class='media'>Media classe: <strong>" + media + "/10</strong> | Studenti: <strong>" + votiLocali.length + "</strong></div>";
+  html += "<table><thead><tr><th>Nome</th><th>Classe</th><th>Voto</th><th>Giudizio</th></tr></thead><tbody>";
+  votiLocali.forEach(v => { html += "<tr><td>"+v.nome+"</td><td>"+v.classe+"</td><td><strong>"+v.voto+"/10</strong></td><td>"+v.giudizio+"</td></tr>"; });
+  html += "</tbody></table><h2>Dettaglio per studente</h2>";
+  votiLocali.forEach(v => { html += "<div class='detail'><strong>"+v.nome+" ("+v.classe+") - Voto: "+v.voto+"/10</strong><br>Giudizio: "+v.giudizio+"<br>Punti di forza: "+v.punti_forza+"<br>Da migliorare: "+v.da_migliorare+"</div>"; });
+  html += "</body></html>";
+  const w = window.open("","_blank");
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(),500);
+}
+
+document.getElementById("userInput").addEventListener("keydown", function(e) {
+  if (e.key==="Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+</script>
+</body>
+</html>
